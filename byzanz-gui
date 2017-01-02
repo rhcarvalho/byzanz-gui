@@ -35,6 +35,9 @@ fi
  
 # Window geometry
 XWININFO=$(xwininfo)
+
+read TITLE < <(grep -o '".*"'  <<< "$XWININFO")
+TITLE=$(echo $TITLE | sed 's/"//g')
 read X < <(awk -F: '/Absolute upper-left X/{print $2}' <<< "$XWININFO")
 read Y < <(awk -F: '/Absolute upper-left Y/{print $2}' <<< "$XWININFO")
 read W < <(awk -F: '/Width/{print $2}' <<< "$XWININFO")
@@ -47,7 +50,14 @@ echo "Recording duration set to $D seconds. Recording will start in $DELAY secon
 espeak "Starting in $DELAY seconds."
 sleep $DELAY
 espeak "Start"
-byzanz-record -c --verbose --delay=0 --duration=$D --x=$X --y=$Y --width=$W --height=$H "$FOLDER/GIFrecord_$TIME.gif"
+
+if [ $TITLE = "unity-panel" ]; then
+	byzanz-record -c --verbose --delay=0 --duration=$D "$FOLDER/GIFrecord_$TIME.gif"
+
+else
+	byzanz-record -c --verbose --delay=0 --duration=$D --x=$X --y=$Y --width=$W --height=$H "$FOLDER/GIFrecord_$TIME.gif"
+fi
+
 espeak "Stop"
  
 # Notify the user of end of recording.
