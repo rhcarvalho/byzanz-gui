@@ -41,7 +41,7 @@ read W < <(awk -F: '/Width/{print $2}' <<< "$XWININFO")
 read H < <(awk -F: '/Height/{print $2}' <<< "$XWININFO")
  
 # Notify the user of recording time and delay
-notify-send "GIFRecorder" "Recording duration set to $D seconds. Recording will start in $DELAY seconds."
+echo "Recording duration set to $D seconds. Recording will start in $DELAY seconds."
  
 #Actual recording
 espeak "Starting in $DELAY seconds."
@@ -51,4 +51,5 @@ byzanz-record -c --verbose --delay=0 --duration=$D --x=$X --y=$Y --width=$W --he
 espeak "Stop"
  
 # Notify the user of end of recording.
+echo "Screencast saved to $FOLDER/GIFrecord_$TIME.gif"
 notify-send "GIFRecorder" "Screencast saved to $FOLDER/GIFrecord_$TIME.gif"
