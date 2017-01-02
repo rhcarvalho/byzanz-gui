@@ -23,11 +23,6 @@ FOLDER="$HOME/Pictures/ByzanzGif"
 # Default recording duration
 DEFDUR=10
  
-# Sound notification to let one know when recording is about to start (and ends)
-beep() {
-    paplay /usr/share/sounds/freedesktop/stereo/message-new-instant.oga &
-}
- 
 # Custom recording duration as set by user
 USERDUR=$(zenity --entry --title "Recoding duration" --text "Please enter the screencast duration in seconds:" --width 200 --height 100 2>/dev/null)
  
@@ -49,10 +44,11 @@ read H < <(awk -F: '/Height/{print $2}' <<< "$XWININFO")
 notify-send "GIFRecorder" "Recording duration set to $D seconds. Recording will start in $DELAY seconds."
  
 #Actual recording
+espeak "Starting in $DELAY seconds."
 sleep $DELAY
-beep
+espeak "Start"
 byzanz-record -c --verbose --delay=0 --duration=$D --x=$X --y=$Y --width=$W --height=$H "$FOLDER/GIFrecord_$TIME.gif"
-beep
+espeak "Stop"
  
 # Notify the user of end of recording.
 notify-send "GIFRecorder" "Screencast saved to $FOLDER/GIFrecord_$TIME.gif"
