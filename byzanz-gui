@@ -21,14 +21,37 @@ FOLDER="$HOME/Pictures"
  
 # Default recording duration
 DEFDUR=10
- 
+
+#Default number of windows
+DEFNUM=1
+
 # Sound notification to let one know when recording is about to start (and ends)
 beep() {
     paplay /usr/share/sounds/freedesktop/stereo/message-new-instant.oga &
 }
- 
+
+min() {
+    if [ $1 -lt $2 ]; then echo $1; else echo $2; fi
+}
+
+max() {
+    if [ $1 -gt $2 ]; then echo $1; else echo $2; fi
+}
+
+# Recalculate new width or height
+recalculate() {
+    if [ $2 -gt $1 ]; then
+        max $(($2-$1+$4)) $3
+    else 
+        max $(($1-$2+$3)) $4
+    fi
+}
+
 # Custom recording duration as set by user
 USERDUR=$(zenity --entry --title "Recoding duration" --text "Please enter the screencast duration in seconds:" --width 200 --height 100 2>/dev/null)
+
+# Custom number of windows as set by user
+WINNUM=$(zenity --entry --title "Number of windows" --text "Please enter the number of windows to include in the screencast:" --width 200 --height 100 2>/dev/null)
  
 # Duration and output file
 if [ $USERDUR -gt 0 ]; then
@@ -36,13 +59,35 @@ if [ $USERDUR -gt 0 ]; then
 else
     D=$DEFDUR
 fi
+
+# Number of windows
+if [ $WINNUM -le 0 ]; then
+    $WINNUM=$DEFNUM
+fi
  
 # Window geometry
-XWININFO=$(xwininfo)
-read X < <(awk -F: '/Absolute upper-left X/{print $2}' <<< "$XWININFO")
-read Y < <(awk -F: '/Absolute upper-left Y/{print $2}' <<< "$XWININFO")
-read W < <(awk -F: '/Width/{print $2}' <<< "$XWININFO")
-read H < <(awk -F: '/Height/{print $2}' <<< "$XWININFO")
+for n in $(seq 1 $WINNUM); do
+    XWININFO=$(xwininfo)
+    read tmpX < <(awk -F: '/Absolute upper-left X/{print $2}' <<< "$XWININFO")
+    read tmpY < <(awk -F: '/Absolute upper-left Y/{print $2}' <<< "$XWININFO")
+    read tmpW < <(awk -F: '/Width/{print $2}' <<< "$XWININFO")
+    read tmpH < <(awk -F: '/Height/{print $2}' <<< "$XWININFO")
+    if [ $n -gt 1 ]; then
+        W=$(recalculate $X $tmpX $W $tmpW)
+        H=$(recalculate $Y $tmpY $H $tmpH)
+        X=$(min $X $tmpX)
+        Y=$(min $Y $tmpY)
+    else
+        W=$tmpW
+        H=$tmpH
+        X=$tmpX
+        Y=$tmpY
+    fi
+done
+
+# Recovering higher window bar
+Y=$(($Y-25))
+H=$(($H+25))
  
 # Notify the user of recording time and delay
 notify-send "GIFRecorder" "Recording duration set to $D seconds. Recording will start in $DELAY seconds."
