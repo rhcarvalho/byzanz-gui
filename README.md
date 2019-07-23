@@ -2,6 +2,16 @@
 
 Simple program to create animated GIFs on Linux.
 
+## See also
+
+[Ask Ubuntu: How to create animated GIF images of a screencast?](https://askubuntu.com/questions/107726/how-to-create-animated-gif-images-of-a-screencast) — home of the original script to control `byzanz-record` and several alternatives.
+
+Some alternative screen recording software mentioned among the answers in Ask Ubuntu:
+
+- [Peek](https://github.com/phw/peek)
+- [Record-gif](https://github.com/edouard-lopez/record-gif.sh) (based on the same script as seen in Ask Ubuntu and here)
+- [Silentcast](https://github.com/colinkeenan/silentcast)
+
 ## Usage
 
 Clone this repository and add it to your PATH, or copy the `byzanz-gui` to a
